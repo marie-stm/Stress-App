@@ -9,12 +9,20 @@ export default function HomeMenu() {
     <View style={styles.container}>
       <Text style={styles.title}>Que veux-tu faire ?</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Suivi' as never)}>
-        <Text style={styles.buttonText}>Suivi du stress</Text>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('StressTracker' as never)}>
+        <Text style={styles.buttonText}>Comment te sens-tu ?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Journal' as never)}>
-        <Text style={styles.buttonText}>Journal</Text>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('JournalScreen' as never)}>
+        <Text style={styles.buttonText}>Ton journal quotidien</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Relaxation' as never)}>
+        <Text style={styles.buttonText}>Exercices de relaxation</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Statistiques' as never)}>
+        <Text style={styles.buttonText}>Tes statistiques</Text>
       </TouchableOpacity>
     </View>
   );
