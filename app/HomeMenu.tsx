@@ -1,12 +1,20 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons'; // 💡 Ajout de l'icône
 
 export default function HomeMenu() {
   const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
+      {/* 🔔 Icône cloche en haut à droite */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.navigate('ReminderScreen' as never)}>
+          <Ionicons name="notifications-outline" size={28} color="#ff7a00" />
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.title}>Que veux-tu faire ?</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('StressTracker' as never)}>
@@ -29,8 +37,14 @@ export default function HomeMenu() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  title: { fontSize: 24, color: '#ff7a00', marginBottom: 30 },
+  container: { flex: 1, backgroundColor: '#121212', padding: 20 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 40,
+    marginBottom: 10,
+  },
+  title: { fontSize: 24, color: '#ff7a00', textAlign: 'center', marginBottom: 30 },
   button: {
     backgroundColor: '#ff7a00',
     paddingVertical: 15,
@@ -38,6 +52,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginVertical: 10,
     width: '80%',
+    alignSelf: 'center',
     alignItems: 'center',
   },
   buttonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
