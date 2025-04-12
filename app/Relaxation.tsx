@@ -1,4 +1,5 @@
 import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import colors from '@/constants/Colors';
 
 const exercises = [
   {
@@ -36,14 +37,17 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     alignItems: 'center',
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: colors.accent,
+    textAlign: 'center',
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
@@ -53,6 +57,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
+    borderWidth: 1,
+    borderColor: colors.accent,
   },
   image: {
     width: 240,
@@ -61,22 +67,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     resizeMode: 'cover',
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  description: {
-    textAlign: 'center',
-    marginBottom: 10,
-  },
   button: {
-    backgroundColor: '#FFA500',
+    backgroundColor: colors.accent,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 12,
   },
   buttonText: {
-    color: 'white',
+    color: colors.buttonText,
     fontWeight: 'bold',
   },
 });

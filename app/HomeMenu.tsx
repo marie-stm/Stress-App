@@ -1,17 +1,18 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; // 💡 Ajout de l'icône
+import { Ionicons } from '@expo/vector-icons';
+
+import colors from '@/constants/Colors'; 
 
 export default function HomeMenu() {
   const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
-      {/* 🔔 Icône cloche en haut à droite */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate('ReminderScreen' as never)}>
-          <Ionicons name="notifications-outline" size={28} color="#ff7a00" />
+          <Ionicons name="notifications-outline" size={28} color={colors.accent} />
         </TouchableOpacity>
       </View>
 
@@ -37,16 +38,26 @@ export default function HomeMenu() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    padding: 20,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginTop: 40,
     marginBottom: 10,
   },
-  title: { fontSize: 24, color: '#ff7a00', textAlign: 'center', marginBottom: 30 },
+  title: {
+    fontSize: 24,
+    color: colors.accent,
+    textAlign: 'center',
+    marginBottom: 30,
+    fontWeight: '600',
+  },
   button: {
-    backgroundColor: '#ff7a00',
+    backgroundColor: colors.accent,
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 12,
@@ -55,5 +66,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
   },
-  buttonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+  buttonText: {
+    color: colors.buttonText,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import colors from '@/constants/Colors';
 
 const OPENAI_API_KEY = 'sk-...'; // Remplace par ta clé OpenAI 🔐
 
@@ -100,10 +101,7 @@ export default function JournalScreen() {
     <View style={styles.container}>
       {/* BOUTONS ACTIONS */}
       <View style={styles.toolbar}>
-        <TouchableOpacity
-          style={styles.toolButton}
-          onPress={() => saveMessages(messages)}
-        >
+        <TouchableOpacity style={styles.toolButton} onPress={() => saveMessages(messages)}>
           <Text style={styles.toolText}>💾 Sauvegarder</Text>
         </TouchableOpacity>
 
@@ -130,8 +128,8 @@ export default function JournalScreen() {
       {/* LOADER IA */}
       {loading && (
         <View style={styles.loading}>
-          <ActivityIndicator color="#ff7a00" size="small" />
-          <Text style={{ color: 'white', marginLeft: 10 }}>
+          <ActivityIndicator color={colors.accent} size="small" />
+          <Text style={{ color: colors.text, marginLeft: 10 }}>
             L'IA est en train d’écrire...
           </Text>
         </View>
@@ -144,7 +142,7 @@ export default function JournalScreen() {
           value={input}
           onChangeText={setInput}
           placeholder="Écris ici..."
-          placeholderTextColor="#aaa"
+          placeholderTextColor={colors.placeholder}
         />
         <TouchableOpacity style={styles.button} onPress={sendMessage}>
           <Text style={styles.buttonText}>Envoyer</Text>
@@ -155,8 +153,13 @@ export default function JournalScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212' },
-  chat: { padding: 10 },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  chat: {
+    padding: 10,
+  },
   message: {
     padding: 10,
     borderRadius: 10,
@@ -164,37 +167,46 @@ const styles = StyleSheet.create({
     maxWidth: '75%',
   },
   user: {
-    backgroundColor: '#ff7a00',
+    backgroundColor: colors.accent,
     alignSelf: 'flex-end',
   },
   bot: {
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.card,
     alignSelf: 'flex-start',
-    borderColor: '#ff7a00',
+    borderColor: colors.accent,
     borderWidth: 1,
   },
-  text: { color: 'white' },
+  text: {
+    color: colors.text,
+  },
   inputContainer: {
     flexDirection: 'row',
     padding: 10,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.card,
     alignItems: 'center',
+    borderTopColor: colors.accent,
+    borderTopWidth: 1,
   },
   input: {
     flex: 1,
-    color: 'white',
-    backgroundColor: '#2a2a2a',
+    color: colors.text,
+    backgroundColor: '#FDF6EC',
     borderRadius: 10,
     padding: 10,
     marginRight: 10,
+    borderWidth: 1,
+    borderColor: colors.accent,
   },
   button: {
-    backgroundColor: '#ff7a00',
+    backgroundColor: colors.accent,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 10,
   },
-  buttonText: { color: 'white', fontWeight: 'bold' },
+  buttonText: {
+    color: colors.buttonText,
+    fontWeight: 'bold',
+  },
   loading: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -205,16 +217,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 10,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.accent,
   },
   toolButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#ff7a00',
+    backgroundColor: colors.accent,
     borderRadius: 10,
   },
   toolText: {
-    color: 'white',
+    color: colors.buttonText,
     fontWeight: 'bold',
     fontSize: 14,
   },

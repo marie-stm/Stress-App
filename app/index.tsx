@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import colors from '@/constants/Colors'; 
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
@@ -35,7 +36,7 @@ export default function WelcomeScreen() {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#ff7a00" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -53,21 +54,21 @@ export default function WelcomeScreen() {
       <Text style={styles.title}>Bienvenue !</Text>
       <TextInput
         placeholder="Prénom"
-        placeholderTextColor="#ccc"
+        placeholderTextColor={colors.placeholder}
         value={firstName}
         onChangeText={setFirstName}
         style={styles.input}
       />
       <TextInput
         placeholder="Nom"
-        placeholderTextColor="#ccc"
+        placeholderTextColor={colors.placeholder}
         value={lastName}
         onChangeText={setLastName}
         style={styles.input}
       />
       <TextInput
         placeholder="Mot de passe"
-        placeholderTextColor="#ccc"
+        placeholderTextColor={colors.placeholder}
         value={password}
         secureTextEntry
         onChangeText={setPassword}
@@ -81,24 +82,39 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  title: { fontSize: 24, color: '#ff7a00', marginBottom: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    color: colors.accent,
+    marginBottom: 20,
+    fontWeight: '600',
+  },
   input: {
-    backgroundColor: '#1e1e1e',
-    color: 'white',
+    backgroundColor: colors.card,
+    color: colors.text,
     width: '100%',
     padding: 10,
     marginVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ff7a00',
+    borderColor: colors.accent,
   },
   button: {
-    backgroundColor: '#ff7a00',
+    backgroundColor: colors.accent,
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 10,
     marginTop: 15,
   },
-  buttonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  buttonText: {
+    color: colors.buttonText,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
