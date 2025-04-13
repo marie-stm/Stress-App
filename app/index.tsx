@@ -71,22 +71,28 @@ export default function WelcomeScreen() {
         placeholderTextColor={colors.placeholder}
         value={firstName}
         onChangeText={setFirstName}
-        style={[styles.input, {
-          backgroundColor: colors.card,
-          color: colors.text,
-          borderColor: colors.accent,
-        }]}
+        style={[
+          styles.input,
+          {
+            backgroundColor: colors.card,
+            color: colors.text,
+            borderColor: colors.accent,
+          },
+        ]}
       />
       <TextInput
         placeholder="Nom"
         placeholderTextColor={colors.placeholder}
         value={lastName}
         onChangeText={setLastName}
-        style={[styles.input, {
-          backgroundColor: colors.card,
-          color: colors.text,
-          borderColor: colors.accent,
-        }]}
+        style={[
+          styles.input,
+          {
+            backgroundColor: colors.card,
+            color: colors.text,
+            borderColor: colors.accent,
+          },
+        ]}
       />
       <TextInput
         placeholder="Mot de passe"
@@ -94,17 +100,23 @@ export default function WelcomeScreen() {
         value={password}
         secureTextEntry
         onChangeText={setPassword}
-        style={[styles.input, {
-          backgroundColor: colors.card,
-          color: colors.text,
-          borderColor: colors.accent,
-        }]}
+        style={[
+          styles.input,
+          {
+            backgroundColor: colors.card,
+            color: colors.text,
+            borderColor: colors.accent,
+          },
+        ]}
       />
+
       <TouchableOpacity
         style={[styles.button, { backgroundColor: colors.accent }]}
         onPress={registerUser}
       >
-        <Text style={[styles.buttonText, { color: colors.buttonText }]}>S'inscrire</Text>
+        <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+          S'inscrire
+        </Text>
       </TouchableOpacity>
     </View>
   );

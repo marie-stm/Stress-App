@@ -11,14 +11,18 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 
-const OPENAI_API_KEY = 'sk-...'; // Remplace par ta vraie clé OpenAI 🔐
+const OPENAI_API_KEY = 'sk-...'; // 🔐 Remplace par ta clé
 
 export default function JournalScreen() {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -28,9 +32,7 @@ export default function JournalScreen() {
 
   const loadMessages = async () => {
     const stored = await AsyncStorage.getItem('journal');
-    if (stored) {
-      setMessages(JSON.parse(stored));
-    }
+    if (stored) setMessages(JSON.parse(stored));
   };
 
   const saveMessages = async (newMessages: any[]) => {
@@ -66,7 +68,6 @@ export default function JournalScreen() {
           },
         }
       );
-
       return res.data.choices[0].message.content.trim();
     } catch (err) {
       console.error('Erreur IA :', err);
@@ -109,7 +110,15 @@ export default function JournalScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* BARRE D'ACTIONS */}
+      {/* 🔙 Bouton retour */}
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{ padding: 10, position: 'absolute', top: 40, left: 10, zIndex: 1 }}
+      >
+        <Ionicons name="chevron-back" size={28} color={colors.accent} />
+      </TouchableOpacity>
+
+      {/* 🛠 Barre d'actions */}
       <View
         style={{
           flexDirection: 'row',
@@ -118,6 +127,7 @@ export default function JournalScreen() {
           backgroundColor: colors.card,
           borderBottomWidth: 1,
           borderBottomColor: colors.accent,
+          marginTop: 80,
         }}
       >
         <TouchableOpacity
@@ -148,7 +158,7 @@ export default function JournalScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* MESSAGES */}
+      {/* 💬 Messages */}
       <FlatList
         data={messages}
         renderItem={renderItem}
@@ -156,7 +166,7 @@ export default function JournalScreen() {
         contentContainerStyle={styles.chat}
       />
 
-      {/* LOADER */}
+      {/* ⏳ Chargement IA */}
       {loading && (
         <View style={styles.loading}>
           <ActivityIndicator color={colors.accent} size="small" />
@@ -166,7 +176,7 @@ export default function JournalScreen() {
         </View>
       )}
 
-      {/* INPUT */}
+      {/* ⌨️ Saisie */}
       <View
         style={{
           flexDirection: 'row',

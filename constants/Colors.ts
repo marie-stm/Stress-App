@@ -11,16 +11,14 @@ export const Colors = {
     notification: '#B8EBD0',
     tint: '#A67B5B',
   },
-  dark: {
-    background: '#1F1F1F',        // gris doux pour éviter noir pur
-    card: '#2C2C2C',
-    accent: '#B99372',            // marron clair chaud
-    text: '#EFEFEF',
-    placeholder: '#C9BEB3',
-    buttonText: '#FFFDF6',
-    mint: '#8ED1B2',
-    border: '#B99372',
-    notification: '#8ED1B2',
-    tint: '#B99372',
-  },
-};
+  dark:{
+  background: '#E9E8E3',     // Fond général moderne (beige-gris clair)
+  card: '#DAD7CE',           // Blocs, boutons, éléments visuels doux
+  accent: '#4CB8B3',         // Turquoise clair moderne
+  text: '#2C2C2C',           // Texte principal (moderne et lisible)
+  secondaryText: '#6F6F6F',  // Texte secondaire (placeholders, infos)
+  placeholder: '#A3A3A3',
+  buttonText: '#FFFFFF',
+  border: '#CFCFCF',
+  mint: '#A8E6CF',           // Option pour éléments positifs/zen
+}};

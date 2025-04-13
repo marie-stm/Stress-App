@@ -9,6 +9,8 @@ import {
   useColorScheme,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 
 const moods = [
@@ -32,6 +34,7 @@ export default function StressTracker() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const navigation = useNavigation();
 
   const saveMood = async () => {
     const today = new Date().toISOString().split('T')[0];
@@ -74,7 +77,18 @@ export default function StressTracker() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.accent }]}>Comment te sens-tu ?</Text>
+      {/* 🔙 Bouton retour */}
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{ position: 'absolute', top: 40, left: 20, zIndex: 1 }}
+      >
+        <Ionicons name="chevron-back" size={28} color={colors.accent} />
+      </TouchableOpacity>
+
+      <Text style={[styles.title, { color: colors.accent, marginTop: 80 }]}>
+        Comment te sens-tu ?
+      </Text>
+
       <FlatList
         data={moods}
         renderItem={renderItem}
@@ -82,6 +96,7 @@ export default function StressTracker() {
         numColumns={3}
         contentContainerStyle={styles.grid}
       />
+
       <TouchableOpacity
         style={[
           styles.saveButton,

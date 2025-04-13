@@ -4,10 +4,14 @@ import {
   Text,
   Dimensions,
   StyleSheet,
+  TouchableOpacity,
   useColorScheme,
+  View,
 } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 import type { ChartData } from 'react-native-chart-kit';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -32,12 +36,13 @@ const journalData: ChartData = {
 export default function Statistiques() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const navigation = useNavigation();
 
   const chartConfig = {
     backgroundGradientFrom: colors.card,
     backgroundGradientTo: colors.card,
     decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(166, 123, 91, ${opacity})`, // ou `${colors.accent}` si tu préfères
+    color: (opacity = 1) => `rgba(166, 123, 91, ${opacity})`,
     labelColor: () => colors.text,
     propsForDots: {
       r: '6',
@@ -48,39 +53,49 @@ export default function Statistiques() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.accent }]}>📊 Statistiques Hebdo</Text>
+      {/* 🔙 Retour */}
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{ position: 'absolute', top: 40, left: 20, zIndex: 1 }}
+      >
+        <Ionicons name="chevron-back" size={28} color={colors.accent} />
+      </TouchableOpacity>
 
-      <Text style={[styles.subtitle, { color: colors.text }]}>😄 Humeur moyenne</Text>
-      <LineChart
-        data={humeurData}
-        width={screenWidth - 32}
-        height={220}
-        chartConfig={chartConfig}
-        bezier
-        style={styles.chart}
-      />
+      <View style={{ marginTop: 80 }}>
+        <Text style={[styles.title, { color: colors.accent }]}>📊 Statistiques Hebdo</Text>
 
-      <Text style={[styles.subtitle, { color: colors.text }]}>🧘 Exercices réalisés</Text>
-      <BarChart
-        data={exerciceData}
-        width={screenWidth - 32}
-        height={200}
-        chartConfig={chartConfig}
-        fromZero
-        showValuesOnTopOfBars
-        style={styles.chart}
-      />
+        <Text style={[styles.subtitle, { color: colors.text }]}>😄 Humeur moyenne</Text>
+        <LineChart
+          data={humeurData}
+          width={screenWidth - 32}
+          height={220}
+          chartConfig={chartConfig}
+          bezier
+          style={styles.chart}
+        />
 
-      <Text style={[styles.subtitle, { color: colors.text }]}>📓 Journal rempli</Text>
-      <BarChart
-        data={journalData}
-        width={screenWidth - 32}
-        height={200}
-        chartConfig={chartConfig}
-        fromZero
-        showValuesOnTopOfBars
-        style={styles.chart}
-      />
+        <Text style={[styles.subtitle, { color: colors.text }]}>🧘 Exercices réalisés</Text>
+        <BarChart
+          data={exerciceData}
+          width={screenWidth - 32}
+          height={200}
+          chartConfig={chartConfig}
+          fromZero
+          showValuesOnTopOfBars
+          style={styles.chart}
+        />
+
+        <Text style={[styles.subtitle, { color: colors.text }]}>📓 Journal rempli</Text>
+        <BarChart
+          data={journalData}
+          width={screenWidth - 32}
+          height={200}
+          chartConfig={chartConfig}
+          fromZero
+          showValuesOnTopOfBars
+          style={styles.chart}
+        />
+      </View>
     </ScrollView>
   );
 }

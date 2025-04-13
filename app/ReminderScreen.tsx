@@ -8,17 +8,23 @@ import {
   useColorScheme,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 
 export default function ReminderScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const navigation = useNavigation();
 
   useEffect(() => {
     const askPermission = async () => {
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert("Permission refusée", "L'application ne pourra pas envoyer de rappels.");
+        Alert.alert(
+          "Permission refusée",
+          "L'application ne pourra pas envoyer de rappels."
+        );
       }
     };
     askPermission();
@@ -42,9 +48,18 @@ export default function ReminderScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.accent }]}>
+      {/* 🔙 Bouton retour */}
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{ position: 'absolute', top: 40, left: 20, zIndex: 1 }}
+      >
+        <Ionicons name="chevron-back" size={28} color={colors.accent} />
+      </TouchableOpacity>
+
+      <Text style={[styles.title, { color: colors.accent, marginTop: 80 }]}>
         Activer un rappel quotidien
       </Text>
+
       <TouchableOpacity
         style={[styles.button, { backgroundColor: colors.accent }]}
         onPress={scheduleNotification}
@@ -60,7 +75,7 @@ export default function ReminderScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 20,
   },

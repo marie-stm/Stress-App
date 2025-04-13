@@ -28,7 +28,6 @@ export default function WelcomeScreen() {
       const data = await AsyncStorage.getItem('user');
       if (data) {
         setExistingUser(JSON.parse(data));
-        setTimeout(() => navigation.navigate('HomeMenu' as never), 1000);
       }
       setIsLoading(false);
     };
@@ -42,6 +41,14 @@ export default function WelcomeScreen() {
       JSON.stringify({ firstName, lastName, password })
     );
     navigation.navigate('HomeMenu' as never);
+  };
+
+  const logout = async () => {
+    await AsyncStorage.removeItem('user');
+    setExistingUser(null);
+    setFirstName('');
+    setLastName('');
+    setPassword('');
   };
 
   if (isLoading) {
@@ -58,6 +65,14 @@ export default function WelcomeScreen() {
         <Text style={[styles.title, { color: colors.accent }]}>
           Bonjour, {existingUser.firstName} 👋
         </Text>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.accent, marginTop: 20 }]}
+          onPress={logout}
+        >
+          <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+            Changer d’utilisateur
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -65,6 +80,7 @@ export default function WelcomeScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Text style={[styles.title, { color: colors.accent }]}>Bienvenue !</Text>
+
       <TextInput
         placeholder="Prénom"
         placeholderTextColor={colors.placeholder}
