@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  useColorScheme,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import colors from '@/constants/Colors';
+import { Colors } from '@/constants/Colors';
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+
   const [isLoading, setIsLoading] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -35,7 +46,7 @@ export default function WelcomeScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
@@ -43,28 +54,44 @@ export default function WelcomeScreen() {
 
   if (existingUser) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Bonjour, {existingUser.firstName} 👋</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Text style={[styles.title, { color: colors.accent }]}>
+          Bonjour, {existingUser.firstName} 👋
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bienvenue !</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.accent }]}>Bienvenue !</Text>
       <TextInput
         placeholder="Prénom"
         placeholderTextColor={colors.placeholder}
         value={firstName}
         onChangeText={setFirstName}
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            backgroundColor: colors.card,
+            color: colors.text,
+            borderColor: colors.accent,
+          },
+        ]}
       />
       <TextInput
         placeholder="Nom"
         placeholderTextColor={colors.placeholder}
         value={lastName}
         onChangeText={setLastName}
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            backgroundColor: colors.card,
+            color: colors.text,
+            borderColor: colors.accent,
+          },
+        ]}
       />
       <TextInput
         placeholder="Mot de passe"
@@ -72,10 +99,22 @@ export default function WelcomeScreen() {
         value={password}
         secureTextEntry
         onChangeText={setPassword}
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            backgroundColor: colors.card,
+            color: colors.text,
+            borderColor: colors.accent,
+          },
+        ]}
       />
-      <TouchableOpacity style={styles.button} onPress={registerUser}>
-        <Text style={styles.buttonText}>S'inscrire</Text>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: colors.accent }]}
+        onPress={registerUser}
+      >
+        <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+          S'inscrire
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -84,36 +123,29 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   title: {
     fontSize: 24,
-    color: colors.accent,
     marginBottom: 20,
     fontWeight: '600',
   },
   input: {
-    backgroundColor: colors.card,
-    color: colors.text,
     width: '100%',
     padding: 10,
     marginVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.accent,
   },
   button: {
-    backgroundColor: colors.accent,
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 10,
     marginTop: 15,
   },
   buttonText: {
-    color: colors.buttonText,
     fontWeight: 'bold',
     fontSize: 16,
   },

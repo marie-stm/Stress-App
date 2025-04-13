@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Alert,
+  useColorScheme,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import colors from '@/constants/Colors';
+import { Colors } from '@/constants/Colors';
 
 const moods = [
   { label: "Sautes d’humeur", emoji: "🌦️" },
@@ -22,6 +30,8 @@ const moods = [
 
 export default function StressTracker() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
   const saveMood = async () => {
     const today = new Date().toISOString().split('T')[0];
@@ -33,29 +43,38 @@ export default function StressTracker() {
     }
   };
 
-  const renderItem = ({ item }: any) => (
-    <TouchableOpacity
-      style={[
-        styles.moodButton,
-        selectedMood === item.label && styles.selected,
-      ]}
-      onPress={() => setSelectedMood(item.label)}
-    >
-      <Text style={styles.emoji}>{item.emoji}</Text>
-      <Text
+  const renderItem = ({ item }: any) => {
+    const isSelected = selectedMood === item.label;
+    return (
+      <TouchableOpacity
         style={[
-          styles.label,
-          selectedMood === item.label && styles.labelSelected,
+          styles.moodButton,
+          {
+            backgroundColor: isSelected ? colors.accent : colors.card,
+            borderColor: colors.accent,
+          },
         ]}
+        onPress={() => setSelectedMood(item.label)}
       >
-        {item.label}
-      </Text>
-    </TouchableOpacity>
-  );
+        <Text style={styles.emoji}>{item.emoji}</Text>
+        <Text
+          style={[
+            styles.label,
+            {
+              color: isSelected ? colors.buttonText : colors.text,
+              fontWeight: isSelected ? 'bold' : 'normal',
+            },
+          ]}
+        >
+          {item.label}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Comment te sens-tu ?</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.accent }]}>Comment te sens-tu ?</Text>
       <FlatList
         data={moods}
         renderItem={renderItem}
@@ -64,11 +83,16 @@ export default function StressTracker() {
         contentContainerStyle={styles.grid}
       />
       <TouchableOpacity
-        style={[styles.saveButton, !selectedMood && { opacity: 0.4 }]}
+        style={[
+          styles.saveButton,
+          { backgroundColor: colors.accent, opacity: selectedMood ? 1 : 0.4 },
+        ]}
         onPress={saveMood}
         disabled={!selectedMood}
       >
-        <Text style={styles.saveButtonText}>Enregistrer</Text>
+        <Text style={[styles.saveButtonText, { color: colors.buttonText }]}>
+          Enregistrer
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -77,7 +101,6 @@ export default function StressTracker() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
     padding: 20,
     paddingTop: 50,
   },
@@ -85,7 +108,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginBottom: 20,
     textAlign: 'center',
-    color: colors.accent,
     fontWeight: '600',
   },
   grid: {
@@ -93,16 +115,11 @@ const styles = StyleSheet.create({
   },
   moodButton: {
     borderWidth: 2,
-    borderColor: colors.accent,
-    backgroundColor: colors.card,
     borderRadius: 10,
     padding: 10,
     margin: 8,
     width: 90,
     alignItems: 'center',
-  },
-  selected: {
-    backgroundColor: colors.accent,
   },
   emoji: {
     fontSize: 30,
@@ -111,14 +128,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 12,
     textAlign: 'center',
-    color: colors.text,
-  },
-  labelSelected: {
-    color: colors.buttonText,
-    fontWeight: 'bold',
   },
   saveButton: {
-    backgroundColor: colors.accent,
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 10,
@@ -126,7 +137,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   saveButtonText: {
-    color: colors.buttonText,
     fontSize: 16,
     fontWeight: 'bold',
   },

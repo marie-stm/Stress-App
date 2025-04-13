@@ -7,17 +7,20 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
+  useColorScheme,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import colors from '@/constants/Colors';
+import { Colors } from '@/constants/Colors';
 
-const OPENAI_API_KEY = 'sk-...'; // Remplace par ta clé OpenAI 🔐
+const OPENAI_API_KEY = 'sk-...'; // Remplace par ta vraie clé OpenAI 🔐
 
 export default function JournalScreen() {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
   useEffect(() => {
     loadMessages();
@@ -90,30 +93,58 @@ export default function JournalScreen() {
     <View
       style={[
         styles.message,
-        item.sender === 'user' ? styles.user : styles.bot,
+        item.sender === 'user'
+          ? { backgroundColor: colors.accent, alignSelf: 'flex-end' }
+          : {
+              backgroundColor: colors.card,
+              borderColor: colors.accent,
+              borderWidth: 1,
+              alignSelf: 'flex-start',
+            },
       ]}
     >
-      <Text style={styles.text}>{item.message}</Text>
+      <Text style={{ color: colors.text }}>{item.message}</Text>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      {/* BOUTONS ACTIONS */}
-      <View style={styles.toolbar}>
-        <TouchableOpacity style={styles.toolButton} onPress={() => saveMessages(messages)}>
-          <Text style={styles.toolText}>💾 Sauvegarder</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.toolButton} onPress={loadMessages}>
-          <Text style={styles.toolText}>🔁 Restaurer</Text>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      {/* BARRE D'ACTIONS */}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          paddingVertical: 10,
+          backgroundColor: colors.card,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.accent,
+        }}
+      >
+        <TouchableOpacity
+          style={{ ...styles.toolButton, backgroundColor: colors.accent }}
+          onPress={() => saveMessages(messages)}
+        >
+          <Text style={{ ...styles.toolText, color: colors.buttonText }}>
+            💾 Sauvegarder
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.toolButton, { backgroundColor: '#cc0000' }]}
+          style={{ ...styles.toolButton, backgroundColor: colors.accent }}
+          onPress={loadMessages}
+        >
+          <Text style={{ ...styles.toolText, color: colors.buttonText }}>
+            🔁 Restaurer
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{ ...styles.toolButton, backgroundColor: '#cc0000' }}
           onPress={clearMessages}
         >
-          <Text style={styles.toolText}>🗑 Effacer</Text>
+          <Text style={{ ...styles.toolText, color: 'white' }}>
+            🗑 Effacer
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -125,7 +156,7 @@ export default function JournalScreen() {
         contentContainerStyle={styles.chat}
       />
 
-      {/* LOADER IA */}
+      {/* LOADER */}
       {loading && (
         <View style={styles.loading}>
           <ActivityIndicator color={colors.accent} size="small" />
@@ -135,17 +166,45 @@ export default function JournalScreen() {
         </View>
       )}
 
-      {/* ENTRÉE MESSAGE */}
-      <View style={styles.inputContainer}>
+      {/* INPUT */}
+      <View
+        style={{
+          flexDirection: 'row',
+          padding: 10,
+          backgroundColor: colors.card,
+          borderTopColor: colors.accent,
+          borderTopWidth: 1,
+          alignItems: 'center',
+        }}
+      >
         <TextInput
-          style={styles.input}
+          style={{
+            flex: 1,
+            color: colors.text,
+            backgroundColor: '#FDF6EC',
+            borderRadius: 10,
+            padding: 10,
+            marginRight: 10,
+            borderWidth: 1,
+            borderColor: colors.accent,
+          }}
           value={input}
           onChangeText={setInput}
           placeholder="Écris ici..."
           placeholderTextColor={colors.placeholder}
         />
-        <TouchableOpacity style={styles.button} onPress={sendMessage}>
-          <Text style={styles.buttonText}>Envoyer</Text>
+        <TouchableOpacity
+          style={{
+            backgroundColor: colors.accent,
+            paddingVertical: 10,
+            paddingHorizontal: 15,
+            borderRadius: 10,
+          }}
+          onPress={sendMessage}
+        >
+          <Text style={{ color: colors.buttonText, fontWeight: 'bold' }}>
+            Envoyer
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -153,10 +212,6 @@ export default function JournalScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   chat: {
     padding: 10,
   },
@@ -166,69 +221,18 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     maxWidth: '75%',
   },
-  user: {
-    backgroundColor: colors.accent,
-    alignSelf: 'flex-end',
-  },
-  bot: {
-    backgroundColor: colors.card,
-    alignSelf: 'flex-start',
-    borderColor: colors.accent,
-    borderWidth: 1,
-  },
-  text: {
-    color: colors.text,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 10,
-    backgroundColor: colors.card,
-    alignItems: 'center',
-    borderTopColor: colors.accent,
-    borderTopWidth: 1,
-  },
-  input: {
-    flex: 1,
-    color: colors.text,
-    backgroundColor: '#FDF6EC',
-    borderRadius: 10,
-    padding: 10,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: colors.accent,
-  },
-  button: {
-    backgroundColor: colors.accent,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: colors.buttonText,
-    fontWeight: 'bold',
-  },
   loading: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingBottom: 5,
   },
-  toolbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 10,
-    backgroundColor: colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.accent,
-  },
   toolButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: colors.accent,
     borderRadius: 10,
   },
   toolText: {
-    color: colors.buttonText,
     fontWeight: 'bold',
     fontSize: 14,
   },

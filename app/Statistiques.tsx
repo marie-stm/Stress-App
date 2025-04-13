@@ -1,8 +1,14 @@
 import React from 'react';
-import { ScrollView, Text, Dimensions, StyleSheet } from 'react-native';
+import {
+  ScrollView,
+  Text,
+  Dimensions,
+  StyleSheet,
+  useColorScheme,
+} from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
-import { ChartData } from 'react-native-chart-kit';
-import colors from '@/constants/Colors'; // Assure-toi que ce fichier existe avec les bonnes clés
+import type { ChartData } from 'react-native-chart-kit';
+import { Colors } from '@/constants/Colors';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -23,25 +29,28 @@ const journalData: ChartData = {
   datasets: [{ data: [1, 1, 0, 1, 1, 0, 0] }],
 };
 
-const chartConfig = {
-  backgroundGradientFrom: colors.card,
-  backgroundGradientTo: colors.card,
-  decimalPlaces: 0,
-  color: (opacity = 1) => `rgba(166, 123, 91, ${opacity})`, // #A67B5B
-  labelColor: () => colors.text,
-  propsForDots: {
-    r: '6',
-    strokeWidth: '2',
-    stroke: colors.accent,
-  },
-};
-
 export default function Statistiques() {
-  return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>📊 Statistiques Hebdo</Text>
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
-      <Text style={styles.subtitle}>😄 Humeur moyenne</Text>
+  const chartConfig = {
+    backgroundGradientFrom: colors.card,
+    backgroundGradientTo: colors.card,
+    decimalPlaces: 0,
+    color: (opacity = 1) => `rgba(166, 123, 91, ${opacity})`, // ou `${colors.accent}` si tu préfères
+    labelColor: () => colors.text,
+    propsForDots: {
+      r: '6',
+      strokeWidth: '2',
+      stroke: colors.accent,
+    },
+  };
+
+  return (
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.accent }]}>📊 Statistiques Hebdo</Text>
+
+      <Text style={[styles.subtitle, { color: colors.text }]}>😄 Humeur moyenne</Text>
       <LineChart
         data={humeurData}
         width={screenWidth - 32}
@@ -51,7 +60,7 @@ export default function Statistiques() {
         style={styles.chart}
       />
 
-      <Text style={styles.subtitle}>🧘 Exercices réalisés</Text>
+      <Text style={[styles.subtitle, { color: colors.text }]}>🧘 Exercices réalisés</Text>
       <BarChart
         data={exerciceData}
         width={screenWidth - 32}
@@ -62,7 +71,7 @@ export default function Statistiques() {
         style={styles.chart}
       />
 
-      <Text style={styles.subtitle}>📓 Journal rempli</Text>
+      <Text style={[styles.subtitle, { color: colors.text }]}>📓 Journal rempli</Text>
       <BarChart
         data={journalData}
         width={screenWidth - 32}
@@ -79,19 +88,16 @@ export default function Statistiques() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: colors.background,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: colors.accent,
   },
   subtitle: {
     fontSize: 18,
     marginTop: 16,
     marginBottom: 4,
-    color: colors.text,
   },
   chart: {
     marginVertical: 8,
