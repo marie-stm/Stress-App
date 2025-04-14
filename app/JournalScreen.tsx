@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   useColorScheme,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,34 +17,29 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 
-const OPENAI_API_KEY = 'sk-...'; // 🔐 Remplace par ta clé
+const OPENAI_API_KEY = 'sk-...'; // remplace par ta vraie clé
 
 export default function JournalScreen() {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
 
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   useEffect(() => {
-    loadMessages();
+    const load = async () => {
+      const stored = await AsyncStorage.getItem('journal');
+      if (stored) setMessages(JSON.parse(stored));
+    };
+    load();
   }, []);
-
-  const loadMessages = async () => {
-    const stored = await AsyncStorage.getItem('journal');
-    if (stored) setMessages(JSON.parse(stored));
-  };
 
   const saveMessages = async (newMessages: any[]) => {
     setMessages(newMessages);
     await AsyncStorage.setItem('journal', JSON.stringify(newMessages));
-  };
-
-  const clearMessages = async () => {
-    await AsyncStorage.removeItem('journal');
-    setMessages([]);
   };
 
   const generateBotReply = async (msg: string) => {
@@ -52,12 +49,9 @@ export default function JournalScreen() {
         {
           model: 'gpt-3.5-turbo',
           messages: [
-            {
-              role: 'system',
-              content:
-                "Tu es un journal intime chaleureux, bienveillant, à l'écoute. Pose des questions et réponds avec douceur.",
-            },
-            { role: 'user', content: msg },
+            { role: 'system', content: "Tu es un journal intime doux et empathique." },
+            ...messages.map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.message })),
+            { role: 'user', content: msg }
           ],
           temperature: 0.7,
         },
@@ -70,24 +64,30 @@ export default function JournalScreen() {
       );
       return res.data.choices[0].message.content.trim();
     } catch (err) {
-      console.error('Erreur IA :', err);
-      return "Désolé, je n’ai pas pu répondre cette fois 😔";
+      console.error(err);
+      return "Désolé, je n'ai pas pu répondre pour le moment.";
     }
   };
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
+
     const userMsg = { sender: 'user', message: input.trim() };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
+    const updated = [...messages, userMsg];
+    setMessages(updated);
     setInput('');
     setLoading(true);
 
-    const aiResponse = await generateBotReply(userMsg.message);
-    const botMsg = { sender: 'bot', message: aiResponse };
-    const finalMessages = [...newMessages, botMsg];
+    const aiText = await generateBotReply(userMsg.message);
+    const aiMsg = { sender: 'bot', message: aiText };
+
+    const finalMessages = [...updated, aiMsg];
     await saveMessages(finalMessages);
     setLoading(false);
+
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 200);
   };
 
   const renderItem = ({ item }: any) => (
@@ -109,121 +109,76 @@ export default function JournalScreen() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* 🔙 Bouton retour */}
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={{ padding: 10, position: 'absolute', top: 40, left: 10, zIndex: 1 }}
-      >
-        <Ionicons name="chevron-back" size={28} color={colors.accent} />
-      </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
 
-      {/* 🛠 Barre d'actions */}
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          paddingVertical: 10,
-          backgroundColor: colors.card,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.accent,
-          marginTop: 80,
-        }}
-      >
+    >
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        {/* 🔙 Retour */}
         <TouchableOpacity
-          style={{ ...styles.toolButton, backgroundColor: colors.accent }}
-          onPress={() => saveMessages(messages)}
+          onPress={() => navigation.goBack()}
+          style={{ position: 'absolute', top: 40, left: 10, zIndex: 1 }}
         >
-          <Text style={{ ...styles.toolText, color: colors.buttonText }}>
-            💾 Sauvegarder
-          </Text>
+          <Ionicons name="chevron-back" size={28} color={colors.accent} />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={{ ...styles.toolButton, backgroundColor: colors.accent }}
-          onPress={loadMessages}
-        >
-          <Text style={{ ...styles.toolText, color: colors.buttonText }}>
-            🔁 Restaurer
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={{ ...styles.toolButton, backgroundColor: '#cc0000' }}
-          onPress={clearMessages}
-        >
-          <Text style={{ ...styles.toolText, color: 'white' }}>
-            🗑 Effacer
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* 💬 Messages */}
-      <FlatList
-        data={messages}
-        renderItem={renderItem}
-        keyExtractor={(_, index) => index.toString()}
-        contentContainerStyle={styles.chat}
-      />
-
-      {/* ⏳ Chargement IA */}
-      {loading && (
-        <View style={styles.loading}>
-          <ActivityIndicator color={colors.accent} size="small" />
-          <Text style={{ color: colors.text, marginLeft: 10 }}>
-            L'IA est en train d’écrire...
-          </Text>
-        </View>
-      )}
-
-      {/* ⌨️ Saisie */}
-      <View
-        style={{
-          flexDirection: 'row',
-          padding: 10,
-          backgroundColor: colors.card,
-          borderTopColor: colors.accent,
-          borderTopWidth: 1,
-          alignItems: 'center',
-        }}
-      >
-        <TextInput
-          style={{
-            flex: 1,
-            color: colors.text,
-            backgroundColor: '#FDF6EC',
-            borderRadius: 10,
-            padding: 10,
-            marginRight: 10,
-            borderWidth: 1,
-            borderColor: colors.accent,
-          }}
-          value={input}
-          onChangeText={setInput}
-          placeholder="Écris ici..."
-          placeholderTextColor={colors.placeholder}
+        {/* Messages */}
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderItem}
+          keyExtractor={(_, index) => index.toString()}
+          contentContainerStyle={styles.chat}
+          style={{ marginTop: 80 }}
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         />
-        <TouchableOpacity
-          style={{
-            backgroundColor: colors.accent,
-            paddingVertical: 10,
-            paddingHorizontal: 15,
-            borderRadius: 10,
-          }}
-          onPress={sendMessage}
-        >
-          <Text style={{ color: colors.buttonText, fontWeight: 'bold' }}>
-            Envoyer
-          </Text>
-        </TouchableOpacity>
+
+        {/* ⏳ Chargement */}
+        {loading && (
+          <View style={styles.loading}>
+            <ActivityIndicator color={colors.accent} size="small" />
+            <Text style={{ color: colors.text, marginLeft: 10 }}>
+              L'IA écrit...
+            </Text>
+          </View>
+        )}
+
+        {/* Entrée message */}
+        <View style={[styles.inputContainer, { borderTopColor: colors.accent }]}>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                color: colors.text,
+                borderColor: colors.accent,
+                backgroundColor: colors.card,
+              },
+            ]}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Écris ici..."
+            placeholderTextColor={colors.placeholder}
+          />
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.accent }]}
+            onPress={sendMessage}
+          >
+            <Text style={{ color: colors.buttonText, fontWeight: 'bold' }}>
+              Envoyer
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   chat: {
     padding: 10,
+    paddingBottom: 20,
   },
   message: {
     padding: 10,
@@ -237,13 +192,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingBottom: 5,
   },
-  toolButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+  inputContainer: {
+    flexDirection: 'row',
+    padding: 10,
+    borderTopWidth: 1,
+    alignItems: 'center',
   },
-  toolText: {
-    fontWeight: 'bold',
-    fontSize: 14,
+  input: {
+    flex: 1,
+    borderRadius: 10,
+    padding: 10,
+    marginRight: 10,
+    borderWidth: 1,
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 10,
   },
 });

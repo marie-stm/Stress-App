@@ -10,19 +10,19 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Video } from 'expo-av';
+import { Video, ResizeMode } from 'expo-av';
 import { Colors } from '@/constants/Colors';
 
 const exercises = [
   {
     label: 'Respiration 4-4-8',
     image: require('../assets/breathing.png'),
-    video: require('../videos/Puissante Respiration anti-Stress _ La Technique 4-4-8.mp4'),
+    video: require('../assets/videos/v1.mp4'),
   },
   {
     label: 'Posture du lotus',
     image: require('../assets/lotus.png'),
-    video: require('../videos/Posture du lotus (Padmasana).mp4'),
+    video: require('../assets/videos/v2.mp4'),
   },
 ];
 
@@ -30,33 +30,7 @@ export default function Relaxation() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const [selected, setSelected] = useState<number | null>(null);
-
-  if (selected !== null) {
-    const exercise = exercises[selected];
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        {/* Retour vidéo */}
-        <TouchableOpacity
-          onPress={() => setSelected(null)}
-          style={{ position: 'absolute', top: 40, left: 20, zIndex: 1 }}
-        >
-          <Ionicons name="chevron-back" size={28} color={colors.accent} />
-        </TouchableOpacity>
-
-        <Text style={[styles.title, { color: colors.accent }]}>
-          {exercise.label}
-        </Text>
-
-        <Video
-          source={exercise.video}
-          useNativeControls
-          resizeMode="contain"
-          style={styles.video}
-        />
-      </View>
-    );
-  }
+  const [visibleVideoIndex, setVisibleVideoIndex] = useState<number | null>(null);
 
   return (
     <ScrollView
@@ -65,7 +39,7 @@ export default function Relaxation() {
         { backgroundColor: colors.background },
       ]}
     >
-      {/* Retour depuis la liste */}
+      {/* 🔙 Retour */}
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         style={{ position: 'absolute', top: 40, left: 20, zIndex: 1 }}
@@ -91,12 +65,23 @@ export default function Relaxation() {
           <Image source={item.image} style={styles.image} />
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.accent }]}
-            onPress={() => setSelected(index)}
+            onPress={() =>
+              setVisibleVideoIndex(visibleVideoIndex === index ? null : index)
+            }
           >
             <Text style={[styles.buttonText, { color: colors.buttonText }]}>
-              Commencer
+              {visibleVideoIndex === index ? 'Masquer' : 'Commencer'}
             </Text>
           </TouchableOpacity>
+
+          {visibleVideoIndex === index && (
+            <Video
+              source={item.video}
+              useNativeControls
+              resizeMode={ResizeMode.CONTAIN}
+              style={styles.video}
+            />
+          )}
         </View>
       ))}
     </ScrollView>
@@ -135,14 +120,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 12,
+    marginBottom: 10,
   },
   buttonText: {
     fontWeight: 'bold',
   },
   video: {
     width: '100%',
-    height: 240,
+    height: 220,
     borderRadius: 12,
-    marginTop: 20,
+    marginTop: 10,
   },
 });

@@ -14,20 +14,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 
 const moods = [
-  { label: "Sautes d’humeur", emoji: "🌦️" },
-  { label: "Pas en contrôle", emoji: "💫" },
-  { label: "Bien", emoji: "😊" },
-  { label: "Heureux·se", emoji: "☀️" },
-  { label: "Triste", emoji: "🌧️" },
-  { label: "Sensible", emoji: "🌬️" },
-  { label: "En colère", emoji: "🌩️" },
-  { label: "Confiant·e", emoji: "🌞" },
-  { label: "Enthousiasme", emoji: "✨" },
-  { label: "Irritabilité", emoji: "⚡" },
-  { label: "Anxiété", emoji: "🌪️" },
-  { label: "Insécurité", emoji: "☁️" },
-  { label: "Gratitude", emoji: "🌈" },
-  { label: "Indifférence", emoji: "😐" },
+  { score: 14, label: "Heureux·se", emoji: "☀️" },
+  { score: 13, label: "Enthousiasme", emoji: "✨" },
+  { score: 12, label: "Gratitude", emoji: "🌈" },
+  { score: 11, label: "Confiant·e", emoji: "🌞" },
+  { score: 10, label: "Bien", emoji: "😊" },
+  { score: 9, label: "Sensible", emoji: "🌬️" },
+  { score: 8, label: "Indifférence", emoji: "😐" },
+  { score: 7, label: "Sautes d’humeur", emoji: "🌦️" },
+  { score: 6, label: "Triste", emoji: "🌧️" },
+  { score: 5, label: "Pas en contrôle", emoji: "💫" },
+  { score: 4, label: "Insécurité", emoji: "☁️" },
+  { score: 3, label: "Anxiété", emoji: "🌪️" },
+  { score: 2, label: "En colère", emoji: "🌩️" },
+  { score: 1, label: "Irritabilité", emoji: "⚡" },
 ];
 
 export default function StressTracker() {
@@ -69,7 +69,7 @@ export default function StressTracker() {
             },
           ]}
         >
-          {item.label}
+          {item.score}. {item.label}
         </Text>
       </TouchableOpacity>
     );

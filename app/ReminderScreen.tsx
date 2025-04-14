@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,10 @@ import {
   StyleSheet,
   Alert,
   useColorScheme,
+  Platform,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
@@ -16,6 +18,9 @@ export default function ReminderScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const navigation = useNavigation();
+
+  const [time, setTime] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
     const askPermission = async () => {
@@ -30,6 +35,11 @@ export default function ReminderScreen() {
     askPermission();
   }, []);
 
+  const onChange = (event: any, selectedTime?: Date) => {
+    setShowPicker(false);
+    if (selectedTime) setTime(selectedTime);
+  };
+
   const scheduleNotification = async () => {
     await Notifications.scheduleNotificationAsync({
       content: {
@@ -37,13 +47,16 @@ export default function ReminderScreen() {
         body: "C'est le moment de faire un exercice de relaxation.",
       },
       trigger: {
-        hour: 20,
-        minute: 0,
+        hour: time.getHours(),
+        minute: time.getMinutes(),
         repeats: true,
-        type: 'calendar',
-      } as Notifications.CalendarTriggerInput,
+      },
     });
-    Alert.alert("Rappel activé", "Tu recevras une notification chaque jour à 20h.");
+
+    Alert.alert(
+      "Rappel activé",
+      `Tu recevras une notification chaque jour à ${time.getHours()}h${time.getMinutes().toString().padStart(2, '0')}.`
+    );
   };
 
   return (
@@ -57,15 +70,38 @@ export default function ReminderScreen() {
       </TouchableOpacity>
 
       <Text style={[styles.title, { color: colors.accent, marginTop: 80 }]}>
-        Activer un rappel quotidien
+        Choisis une heure pour ton rappel
       </Text>
 
       <TouchableOpacity
         style={[styles.button, { backgroundColor: colors.accent }]}
+        onPress={() => setShowPicker(true)}
+      >
+        <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+          Sélectionner l’heure
+        </Text>
+      </TouchableOpacity>
+
+      {showPicker && (
+        <DateTimePicker
+          value={time}
+          mode="time"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          is24Hour
+          onChange={onChange}
+        />
+      )}
+
+      <Text style={{ marginTop: 20, fontSize: 16, color: colors.text }}>
+        Heure choisie : {time.getHours()}h{time.getMinutes().toString().padStart(2, '0')}
+      </Text>
+
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: colors.accent, marginTop: 30 }]}
         onPress={scheduleNotification}
       >
         <Text style={[styles.buttonText, { color: colors.buttonText }]}>
-          Activer le rappel à 20h
+          Activer le rappel
         </Text>
       </TouchableOpacity>
     </View>
