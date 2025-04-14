@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -22,8 +22,11 @@ export default function ReminderScreen() {
   const [time, setTime] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
 
+  // 📥 Recevoir les notifications même quand l’app est active
+  const notificationListener = useRef<any>();
+
   useEffect(() => {
-    const askPermission = async () => {
+    const setup = async () => {
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
@@ -31,11 +34,23 @@ export default function ReminderScreen() {
           "L'application ne pourra pas envoyer de rappels."
         );
       }
+
+      // Écouter la réception
+      notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        console.log("🔔 Notification reçue :", notification);
+      });
     };
-    askPermission();
+
+    setup();
+
+    return () => {
+      if (notificationListener.current) {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      }
+    };
   }, []);
 
-  const onChange = (event: any, selectedTime?: Date) => {
+  const onChange = (_event: any, selectedTime?: Date) => {
     setShowPicker(false);
     if (selectedTime) setTime(selectedTime);
   };
